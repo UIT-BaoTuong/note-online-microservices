@@ -15,6 +15,9 @@ pipeline {
         stage('Build and Push') {
             steps {
                 container('kaniko') { 
+                    sh 'cat /kaniko/.docker/config.json' 
+                    sh 'ls -la /kaniko/.docker/'
+                    sh '/kaniko/executor --context ...'
                     sh """
                     /kaniko/executor --context \$(pwd)/postgres \
                     --dockerfile \$(pwd)/postgres/Dockerfile \
