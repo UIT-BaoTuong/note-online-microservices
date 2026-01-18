@@ -1,12 +1,13 @@
 pipeline {
-    agent any 
-
+    agent {
+        label 'docker-build' 
+    }
     stages {
         stage('Build Docker Image') {
             steps {
-                script {
+                container('docker') { 
                     dir('postgres') {
-                        docker.build("note-postgres-image:latest")
+                        sh 'docker build -t note-postgres-image:latest .'
                     }
                 }
             }
