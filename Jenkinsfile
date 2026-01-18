@@ -1,4 +1,5 @@
-//
+// Jenkinsfile
+
 pipeline {
     agent {
         label 'kaniko' 
