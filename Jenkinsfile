@@ -2,10 +2,23 @@ pipeline {
     agent any 
 
     stages {
-        stage('Welcome') {
+        stage('Checkout Code') {
             steps {
-                echo 'Hello World from Jenkins Pipeline'
-                sh 'echo "Greeting from Shell: Hello World"'
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh 'cd postgres && docker build -t note-postgres-image:latest .'
+                }
+            }
+        }
+        
+        stage('Verify Image') {
+            steps {
+                sh 'docker images | grep note-postgres-image'
             }
         }
     }
