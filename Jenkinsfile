@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Welcome') {
             steps {
-                echo 'Hello World'
+                echo 'Hello World from Jenkins Pipeline'
                 sh 'echo "Greeting from Shell: Hello World"'
             }
         }
