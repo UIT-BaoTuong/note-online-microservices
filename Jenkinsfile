@@ -1,5 +1,3 @@
-// Jenkinsfile
-
 pipeline {
     agent {
         label 'kaniko' 
@@ -7,22 +5,23 @@ pipeline {
 
     environment {
         DOCKER_HUB_USER = 'tuongndb1609'
-        IMAGE_NAME = 'noteonline-postgres'
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
+        IMAGE_NAME      = 'noteonline-postgres'
+        IMAGE_TAG       = "${env.BUILD_NUMBER}"
+        CONTEXT_PATH    = "postgres"
+        DOCKERFILE_PATH = "postgres/Dockerfile"
     }
 
     stages {
-        stage('Build and Push') {
+        stage('Build and Push with Kaniko') {
             steps {
-                container('kaniko') { 
-                    sh 'cat /kaniko/.docker/config.json' 
-                    sh 'ls -la /kaniko/.docker/'
-                    sh '/kaniko/executor --context ...'
+                container('kaniko') {                     
                     sh """
-                    /kaniko/executor --context \$(pwd)/postgres \
-                    --dockerfile \$(pwd)/postgres/Dockerfile \
-                    --destination ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:${env.IMAGE_TAG} \
-                    --destination ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:latest
+                    /kaniko/executor \
+                        --context ${env.WORKSPACE}/${env.CONTEXT_PATH} \
+                        --dockerfile ${env.WORKSPACE}/${env.DOCKERFILE_PATH} \
+                        --destination ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:${env.IMAGE_TAG} \
+                        --destination ${env.DOCKER_HUB_USER}/${env.IMAGE_NAME}:latest \
+                        --cache=true
                     """
                 }
             }
