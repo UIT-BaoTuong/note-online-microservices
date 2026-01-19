@@ -71,6 +71,7 @@ pipeline {
                 }
             }
         }
+        
         stage('Update Manifests') {
             agent any
             steps {
