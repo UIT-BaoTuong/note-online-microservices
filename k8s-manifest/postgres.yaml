@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: tuongndb1609/noteonline-postgres
+        image: tuongndb1609/noteonline-postgres:latest
         ports:
         - containerPort: 5432
         env:
