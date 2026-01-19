@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: tuongndb1609/noteonline-postgres:48
+        image: tuongndb1609/noteonline-postgres:49
         imagePullPolicy: Always
         ports:
         - containerPort: 5432
