@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: user-service
-        image: tuongndb1609/user-service:46
+        image: tuongndb1609/user-service:47
         imagePullPolicy: Always
         ports:
         - containerPort: 8081 
