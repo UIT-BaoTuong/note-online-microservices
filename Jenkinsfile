@@ -72,9 +72,7 @@ pipeline {
             }
         }
         stage('Update Manifests') {
-            agent {
-                docker { image 'alpine/git' }
-            }
+            agent any
             steps {
                 script {
                     sh """
