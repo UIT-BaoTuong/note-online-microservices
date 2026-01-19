@@ -1,7 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: postgres-deployment
+  labels:
+    app: postgres
 spec:
   replicas: 1
   selector:
@@ -14,13 +16,9 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:18
+        image: tuongndb1609/noteonline-postgres
         ports:
         - containerPort: 5432
         env:
-        - name: POSTGRES_USER
-          value: "admin"
         - name: POSTGRES_PASSWORD
-          value: "password"
-        - name: POSTGRES_DB
-          value: "mydatabase"
+          value: "Aa123456"
