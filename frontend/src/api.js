@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:8081/api/users';
-const NOTE_API_URL = 'http://localhost:8082/api/notes';
+const API_URL = 'http://4.240.103.27:8081/api/users';
+const NOTE_API_URL = 'http://4.240.103.27:8082/api/notes';
 
 export async function login(usernameOrEmail, password) {
   const res = await fetch(`${API_URL}/login`, {
