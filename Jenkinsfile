@@ -71,5 +71,30 @@ pipeline {
                 }
             }
         }
+        stage('Update Manifests') {
+            agent {
+                docker { image 'alpine/git' }
+            }
+            steps {
+                script {
+                    sh """
+                        git config --global user.email 'tuongndb@gmail.com'
+                        git config --global user.name 'Jenkins Bot'
+                    """
+                    sh "sed -i 's|image: ${DOCKER_HUB_USER}/frontend:.*|image: ${DOCKER_HUB_USER}/frontend:${env.BUILD_NUMBER}|g' k8s-manifest/frontend.yaml"
+                    sh "sed -i 's|image: ${DOCKER_HUB_USER}/user-service:.*|image: ${DOCKER_HUB_USER}/user-service:${env.BUILD_NUMBER}|g' k8s-manifest/user-service.yaml"
+                    sh "sed -i 's|image: ${DOCKER_HUB_USER}/note-service:.*|image: ${DOCKER_HUB_USER}/note-service:${env.BUILD_NUMBER}|g' k8s-manifest/note-service.yaml"
+                    sh "sed -i 's|image: ${DOCKER_HUB_USER}/noteonline-postgres:.*|image: ${DOCKER_HUB_USER}/noteonline-postgres:${env.BUILD_NUMBER}|g' k8s-manifest/postgres.yaml"
+
+                    withCredentials([usernamePassword(credentialsId: 'github-token', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        sh """
+                            git add k8s-manifest/*.yaml
+                            git commit -m "chore: update image tags to build ${env.BUILD_NUMBER} [skip ci]"
+                            git push https://${GIT_PASSWORD}@github.com/UIT-BaoTuong/note-online-microservices.git HEAD:main
+                        """
+                    }
+                }
+            }
+        }
     }
 }
