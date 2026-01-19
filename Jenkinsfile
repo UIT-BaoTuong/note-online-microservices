@@ -73,24 +73,54 @@ pipeline {
         }
         
         stage('Update Manifests') {
+            when {
+                anyOf {
+                    changeset "frontend/**"
+                    changeset "user-service/**"
+                    changeset "note-service/**"
+                    changeset "postgres/**"
+                }
+            }
             agent any
             steps {
                 script {
+                    def frontendChanged = currentBuild.changeSets.any { cs -> cs.items.any { it.affectedFiles.any { f -> f.path.startsWith('frontend/') } } }
+                    def userChanged = currentBuild.changeSets.any { cs -> cs.items.any { it.affectedFiles.any { f -> f.path.startsWith('user-service/') } } }
+                    def noteChanged = currentBuild.changeSets.any { cs -> cs.items.any { it.affectedFiles.any { f -> f.path.startsWith('note-service/') } } }
+                    def postgresChanged = currentBuild.changeSets.any { cs -> cs.items.any { it.affectedFiles.any { f -> f.path.startsWith('postgres/') } } }
+
                     sh """
                         git config --global user.email 'tuongndb@gmail.com'
                         git config --global user.name 'Jenkins Bot'
                     """
-                    sh "sed -i 's|image: ${DOCKER_HUB_USER}/frontend:.*|image: ${DOCKER_HUB_USER}/frontend:${env.BUILD_NUMBER}|g' k8s-manifest/frontend.yaml"
-                    sh "sed -i 's|image: ${DOCKER_HUB_USER}/user-service:.*|image: ${DOCKER_HUB_USER}/user-service:${env.BUILD_NUMBER}|g' k8s-manifest/user-service.yaml"
-                    sh "sed -i 's|image: ${DOCKER_HUB_USER}/note-service:.*|image: ${DOCKER_HUB_USER}/note-service:${env.BUILD_NUMBER}|g' k8s-manifest/note-service.yaml"
-                    sh "sed -i 's|image: ${DOCKER_HUB_USER}/noteonline-postgres:.*|image: ${DOCKER_HUB_USER}/noteonline-postgres:${env.BUILD_NUMBER}|g' k8s-manifest/postgres.yaml"
+                    def touched = []
+                    if (frontendChanged) {
+                        sh "sed -i 's|image: ${DOCKER_HUB_USER}/frontend:.*|image: ${DOCKER_HUB_USER}/frontend:${env.BUILD_NUMBER}|g' k8s-manifest/frontend.yaml"
+                        touched << 'frontend'
+                    }
+                    if (userChanged) {
+                        sh "sed -i 's|image: ${DOCKER_HUB_USER}/user-service:.*|image: ${DOCKER_HUB_USER}/user-service:${env.BUILD_NUMBER}|g' k8s-manifest/user-service.yaml"
+                        touched << 'user-service'
+                    }
+                    if (noteChanged) {
+                        sh "sed -i 's|image: ${DOCKER_HUB_USER}/note-service:.*|image: ${DOCKER_HUB_USER}/note-service:${env.BUILD_NUMBER}|g' k8s-manifest/note-service.yaml"
+                        touched << 'note-service'
+                    }
+                    if (postgresChanged) {
+                        sh "sed -i 's|image: ${DOCKER_HUB_USER}/noteonline-postgres:.*|image: ${DOCKER_HUB_USER}/noteonline-postgres:${env.BUILD_NUMBER}|g' k8s-manifest/postgres.yaml"
+                        touched << 'postgres'
+                    }
 
-                    withCredentials([usernamePassword(credentialsId: 'github-token', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                        sh """
-                            git add k8s-manifest/*.yaml
-                            git commit -m "chore: update image tags to build ${env.BUILD_NUMBER} [skip ci]"
-                            git push https://${GIT_PASSWORD}@github.com/UIT-BaoTuong/note-online-microservices.git HEAD:main
-                        """
+                    if (touched) {
+                        withCredentials([usernamePassword(credentialsId: 'github-token', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                            sh """
+                                git add k8s-manifest/*.yaml
+                                git commit -m "chore: update image tags to build ${env.BUILD_NUMBER} [skip ci]" || true
+                                git push https://${GIT_PASSWORD}@github.com/UIT-BaoTuong/note-online-microservices.git HEAD:main
+                            """
+                        }
+                    } else {
+                        echo 'No manifest changes needed.'
                     }
                 }
             }
