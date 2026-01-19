@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: tuongndb1609/frontend:41
+        image: tuongndb1609/frontend:42
         imagePullPolicy: Always
         ports:
         - containerPort: 80 
