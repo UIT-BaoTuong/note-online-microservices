@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: note-service
-        image: tuongndb1609/note-service:54
+        image: tuongndb1609/note-service:58
         imagePullPolicy: Always
         ports:
         - containerPort: 8082 
