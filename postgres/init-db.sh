@@ -19,6 +19,5 @@ EOSQL
       GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $database;
 EOSQL
 }
-
 create_user_and_database "note_service"
 create_user_and_database "user_service"
