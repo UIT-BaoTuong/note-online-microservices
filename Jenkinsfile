@@ -56,28 +56,28 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis Frontend') {
-            when { changeset "frontend/**" }
-            steps {
-                script {
-                    def scannerHome = tool 'sonar-scanner' 
-                    withSonarQubeEnv('SonarQubeServer') { 
-                        dir('frontend') {
-                            withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'TOKEN')]) {
-                                sh """
-                                    ${scannerHome}/bin/sonar-scanner \
-                                    -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/** \
-                                    -Dsonar.projectKey=note-online-frontend \
-                                    -Dsonar.sources=. \
-                                    -Dsonar.host.url=http://sonarqube-sonarqube:9000 \
-                                    -Dsonar.login=${TOKEN}
-                                """
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        // stage('SonarQube Analysis Frontend') {
+        //     when { changeset "frontend/**" }
+        //     steps {
+        //         script {
+        //             def scannerHome = tool 'sonar-scanner' 
+        //             withSonarQubeEnv('SonarQubeServer') { 
+        //                 dir('frontend') {
+        //                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'TOKEN')]) {
+        //                         sh """
+        //                             ${scannerHome}/bin/sonar-scanner \
+        //                             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/** \
+        //                             -Dsonar.projectKey=note-online-frontend \
+        //                             -Dsonar.sources=. \
+        //                             -Dsonar.host.url=http://sonarqube-sonarqube:9000 \
+        //                             -Dsonar.login=${TOKEN}
+        //                         """
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Build Frontend') {
             when { changeset "frontend/**" }
