@@ -58,7 +58,6 @@ pipeline {
 
         stage('SonarQube Analysis Frontend') {
             when { changeset "frontend/**" }
-            agent any 
             steps {
                 script {
                     def scannerHome = tool 'sonar-scanner' 
@@ -82,7 +81,6 @@ pipeline {
 
         stage("Quality Gate Frontend") {
             when { changeset "frontend/**" }
-            agent any
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
