@@ -67,6 +67,7 @@ pipeline {
                             withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'TOKEN')]) {
                                 sh """
                                     ${scannerHome}/bin/sonar-scanner \
+                                    -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/** \
                                     -Dsonar.projectKey=note-online-frontend \
                                     -Dsonar.sources=. \
                                     -Dsonar.host.url=http://sonarqube-sonarqube:9000 \
