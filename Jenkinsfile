@@ -56,6 +56,39 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis Frontend') {
+            when { changeset "frontend/**" }
+            agent any 
+            steps {
+                script {
+                    def scannerHome = tool 'sonar-scanner' 
+                    withSonarQubeEnv('SonarQubeServer') { 
+                        dir('frontend') {
+                            withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'TOKEN')]) {
+                                sh """
+                                    ${scannerHome}/bin/sonar-scanner \
+                                    -Dsonar.projectKey=note-online-frontend \
+                                    -Dsonar.sources=. \
+                                    -Dsonar.host.url=http://sonarqube-sonarqube:9000 \
+                                    -Dsonar.login=${TOKEN}
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("Quality Gate Frontend") {
+            when { changeset "frontend/**" }
+            agent any
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Build Frontend') {
             when { changeset "frontend/**" }
             steps {
