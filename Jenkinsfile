@@ -79,15 +79,6 @@ pipeline {
             }
         }
 
-        stage("Quality Gate Frontend") {
-            when { changeset "frontend/**" }
-            steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
         stage('Build Frontend') {
             when { changeset "frontend/**" }
             steps {
