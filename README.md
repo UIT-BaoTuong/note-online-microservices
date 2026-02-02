@@ -1,5 +1,6 @@
 ## System Architecture
 
+```
                          Internet
                             |
                             v
@@ -15,9 +16,11 @@
                             v
                     PostgreSQL:5432
                    (user_service + note_service DBs)
+```
 
 ## CI/CD Architecture
 
+```
 GitHub (Source Code)
     |
     | [Webhook Trigger]
@@ -39,6 +42,7 @@ ArgoCD (CD Controller)
     | [Auto Sync & Self-Heal]
     v
 Kubernetes Cluster
+```
 
 ## Technology Stack
 
